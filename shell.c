@@ -18,9 +18,16 @@ int main(){
   }
   argv[i] = 0;
 
-  int f = fork();
-  wait(&f);
-  execvp(argv[0], argv);
- 
+  int status;
+  int pid = fork();
+  int parent = getpid();
+  if (pid == 0){ // is child process
+    int status;
+    execvp(argv[0], argv);
+    exit(0);
+  }
+  else {
+    wait(&status);
+ } 
   return 0;
 }
