@@ -4,6 +4,12 @@
 #include <string.h>
 #include <errno.h>
 
+char* trimCommand(char* input){
+	char* temp = input;
+	while (isspace(*temp)) temp++;
+	return temp;
+}
+
 char** parseCommand(char* input, char* delim){
 	char** args = (char**)malloc(100);
 	char* temp = input;
@@ -46,11 +52,13 @@ void runProgram(){
 	char input[256];
   	printf("What would you like to do? ");
   	fgets(input, sizeof(input), stdin);
-  	*(strchr(input, '\n')) = NULL;
+  	char *line;
+  	line = trimCommand(input);
+  	*(strchr(line, '\n')) = NULL;
 
   	//parse command
   	char** parameters = (char**)malloc(sizeof(char**) * 100);
-  	parameters = parseCommand(input, " ");
+  	parameters = parseCommand(line, " ");
 
 	//execute command
   	executeCommand(parameters);
