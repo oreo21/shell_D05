@@ -4,18 +4,8 @@
 #include <string.h>
 #include <errno.h>
 
-
-char* readCommand(){
-	char input[256];
-	fgets(input, sizeof(input), stdin);
-	*(strchr(input, "\n")) == NULL;
-	char* ret = (char*)malloc(sizeof(input));
-	ret = input;
-	return ret;
-}
-
 char** parseCommand(char* input, char* delim){
-	char** args = (char**)malloc(1000);
+	char** args = (char**)malloc(100);
 	char* temp = input;
 	int i = 0;
 	while (temp){
@@ -32,7 +22,7 @@ void executeCommand(char** parameters){
 		exit(0);
 	}
 	if (strcmp(parameters[0], "cd") == 0){
-		printf("changing directory...\n");
+		printf("changing directory...\n"); //todo: throw message if cd doesn't work
 		chdir(parameters[1]);
 		return;
 	}
@@ -43,7 +33,7 @@ void executeCommand(char** parameters){
 		}
 		if (myPid == 0){ //child process
 			execvp(parameters[0], parameters);
-			printf("error: %d - %s\n", errno, strerror(errno)); //error, didn't exevp
+			printf("error: %d - %s\n", errno, strerror(errno)); //didn't execute, throw error
 		}
 		else { //parent process
 			wait(&myPid);
@@ -51,20 +41,24 @@ void executeCommand(char** parameters){
 	}
 }
 
+void runProgram(){
+	//read command
+	char input[256];
+  	printf("What would you like to do? ");
+  	fgets(input, sizeof(input), stdin);
+  	*(strchr(input, '\n')) = NULL;
+
+  	//parse command
+  	char** parameters = (char**)malloc(sizeof(char**) * 100);
+  	parameters = parseCommand(input, " ");
+
+	//execute command
+  	executeCommand(parameters);
+}
+
 int main(){
 	while(1){
-    	char input[256];
-  		printf("What would you like to do? ");
-  		fgets(input, sizeof(input), stdin);
-  		//input[strlen(input) - 1] = 0;
-  		*(strchr(input, '\n')) = NULL;
-  		char** argv = (char**)malloc(sizeof(parseCommand(input, " ")));
-  		argv = parseCommand(input, " ");
-  		/* int s = 0;
-		for (; args[s] != NULL; s++)
-			printf("\targs[%d]: %s\n", s, args[s]); */
-	    executeCommand(argv);
-	    free(argv);
+  		runProgram();
 	}
 	return 0;
 }

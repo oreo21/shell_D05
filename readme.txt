@@ -1,12 +1,12 @@
-DWSH
-by JonAlf Dyrland-Weaver and Neeraj Bhatia
+Reo-lly Amazing-ish Shell
+by Reo Kimura
 
 Features:
 	Forks and executes commands!
 	Parses multiple commands on one line!
 	Redirects using >, <!
-	Guaranteed to regrow hair!
-	Can summon a winged unicorn for fast & magical transit!
+	Guaranteed to do something!
+	But can it summon a good grade?
 
 Attempted:
 	The following did not end up working, but have been left
@@ -28,38 +28,34 @@ Bugs:
 		and begin his reign of terror.
 	
 Files & Function Headers:
-parse.c
-	Handles all line parsing fucntions
-	/*======== int count_tokens() ==========
-	Inputs:  char *line
-        	  char delim 
-	Returns: Number of tokens in line separated by delim
 
-	Counts the number of times the character delim appears in the
-	 string line
-	The number of tokens is 1 more than the number of appearences 
-	of delim
-	If delim does not appear, 1 is returned
-	====================*/
+shell.c & shell.h
+	Handles everything: parsing, forking, and executing commands
 
-	/*======== char ** parse_line() ==========
-	Inputs:  char *line 
-	Returns: Array of strings where each entry is a token 
+	/*======== char** parseCommand() ==========
+	Inputs:  char* input
+        	 char* delim 
+	Returns: An array of strings where each entry is a token 
 	separated by delim
 
-	If line contains multiple tokens separated by delim, this 
-	function will put each token into an array of strings
+	If delim is not provided, bad stuff will happen - delim is a must!
 	====================*/
 
-	/*======== char * trim() ==========
-	Inputs:  char *line 
-	Returns: Pointer to the beginning of line
+	/*======== void executeCommand() ==========
+	Inputs:  char** parameters 
+	Returns: Nothing
 
-	Removes leading and trailing whitespace on the string line.
-	Terminating '\0' is placed at a new location if necessary.
+	Forks and has the child process execute the command(s) while the parent 
+	waits. If the provided command line argument(s) don't work, the child will 
+	throw an errno message. Special cases "exit" and "cd" are dealt with separately.
 	====================*/
 
-dwsh.c
-	Handles the forking an executing of commands...
+	/*======== void runProgram() ==========
+	Inputs:  None
+	Returns: Nothing
 
-magical.c
+	Combines all the processes involved in running a command. Reads the input, then
+	uses the parseCommand() and executeCommand() functions to parse and execute the
+	command(s).
+	====================*/
+
