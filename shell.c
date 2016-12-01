@@ -57,8 +57,7 @@ void runProgram(){
 	char input[256];
   	printf("What would you like to do? ");
   	fgets(input, sizeof(input), stdin);
-  	char *line;
-  	line = trimCommand(input);
+  	char *line = trimCommand(input);
   	
   	//parse command
   	char** parameters = (char**)malloc(sizeof(char**) * 100);
