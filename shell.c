@@ -5,8 +5,13 @@
 #include <errno.h>
 
 char* trimCommand(char* input){
+	if (input == NULL) return;
 	char* temp = input;
-	while (isspace(*temp)) temp++;
+	while (isspace(*temp)) temp++; //remove leading
+	if (*temp == 0) return temp; //only whitespace remaining
+	size_t len = strlen(temp);
+	while(isspace(*(temp + len - 1))) len--; //remove trailing
+	temp[len] = '\0';
 	return temp;
 }
 
@@ -54,14 +59,14 @@ void runProgram(){
   	fgets(input, sizeof(input), stdin);
   	char *line;
   	line = trimCommand(input);
-  	*(strchr(line, '\n')) = NULL;
-
+  	
   	//parse command
   	char** parameters = (char**)malloc(sizeof(char**) * 100);
   	parameters = parseCommand(line, " ");
 
 	//execute command
   	executeCommand(parameters);
+  	
 }
 
 int main(){
