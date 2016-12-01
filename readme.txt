@@ -32,10 +32,17 @@ Files & Function Headers:
 shell.c & shell.h
 	Handles everything: parsing, forking, and executing commands
 
+	/*======== char* trimCommand() ==========
+	Inputs:  char* input
+    Returns: A pointer to an array of chars
+
+	Removes all leading and trailing whitespaces of input, if applicable.
+	Gives a blank return statement if the input points to NULL. Otherwise
+	returns a pointer to the modified input.
 	/*======== char** parseCommand() ==========
 	Inputs:  char* input
         	 char* delim 
-	Returns: An array of strings where each entry is a token 
+	Returns: An array of strings where each entry is a token
 	separated by delim
 
 	If delim is not provided, bad stuff will happen - delim is a must!
