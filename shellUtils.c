@@ -88,12 +88,7 @@ void executeCommand(char** parameters){
 		exit(0);
 	}
 	if (strcmp(parameters[0], "cd") == 0){
-		if (chdir(parameters[1]) == -1)
-			printf("error: %d - %s\n", errno, strerror(errno));
-		else {
-			printf("changing directory...\n");
-			chdir(parameters[1]);
-		}
+		chdir(parameters[1]);
 		return;
 	}
 	else {
@@ -169,9 +164,9 @@ void pipeIO(char* input){
 	commandStrOut = strsep(&dupPtr, "|");
 	commandStrOut = trimCommand(commandStrOut);
 	commandStrIn = trimCommand(dupPtr);		
-	char** commandArrOut = (char**)malloc(sizeof(char*) * 100);
+	char** commandArrOut = (char**)malloc(sizeof(char**) * 100);
 	commandArrOut = parseHelper(commandStrOut, " ");
-	char** commandArrIn = (char**)malloc(sizeof(char*) * 100);
+	char** commandArrIn = (char**)malloc(sizeof(char**) * 100);
 	commandArrIn = parseHelper(commandStrIn, " ");
 	
 	int fdDupIn = dup(STDIN_FILENO);
@@ -209,7 +204,7 @@ void runProgram(){
   	printf("What would you like to do? ");
   	fgets(input, sizeof(input), stdin);
   	*(strchr(input, '\n')) = NULL;
-  	
+
    	//parse and execute command(s)
   	int cmdTotal = tallyCommand(input);
 	int cmdNo = 0;
