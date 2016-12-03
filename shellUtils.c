@@ -5,7 +5,9 @@
 #include <fcntl.h>
 #include <ctype.h>
 #include <errno.h>
+#include "shellUtils.h"
 
+//input: 
 char* trimCommand(char* input){
 	if (input == NULL) return;
 	char* temp = input;
@@ -63,45 +65,6 @@ int tallyCommand(char* input){
 	return i;
 }
 
-// string of a single command
-int searchIO(char* input){
-	if (strchr(input, '<') != NULL)	return 0;
-	if (strchr(input, '>') != NULL) return 1;
-	return -1;
-}
-
-void stdInIO(char* input){
-	char* commandStr = (char*)malloc(sizeof(char*) * 100);
-	commandStr = strsep(&input, "<"); //separate command and file
-	commandStr = trimCommand(commandStr);
-	char** commandArr = (char**)malloc(sizeof(char**) * 100);
-	commandArr = parseHelper(commandStr, " ");
-	input = trimCommand(input); //input = filename
-
-	int fdDupIn = dup(STDIN_FILENO);
-	int fdFile = open(input, O_RDONLY, 0644);
-	dup2(fdFile, STDIN_FILENO);
-	executeCommand(commandArr);
-	dup2(fdDupIn, STDIN_FILENO);
-	close(fdFile);
-}
-
-void stdOutIO(char* input){
-	char* commandStr = (char*)malloc(sizeof(char*) * 100);
-	commandStr = strsep(&input, ">"); //separate command and file
-	commandStr = trimCommand(commandStr);
-	char** commandArr = (char**)malloc(sizeof(char**) * 100);
-	commandArr = parseHelper(commandStr, " ");
-	input = trimCommand(input); //input = filename
-
-	int fdDupOut = dup(STDOUT_FILENO);
-	int fdFile = open(input, O_WRONLY|O_CREAT, 0644);
-	dup2(fdFile, STDOUT_FILENO);
-	executeCommand(commandArr);
-	dup2(fdDupOut, STDOUT_FILENO);
-	close(fdFile);
-}
-
 void executeCommand(char** parameters){
 	if (strcmp(parameters[0], "exit") == 0){
 		printf("exiting shell...\n");
@@ -118,7 +81,7 @@ void executeCommand(char** parameters){
 	}
 	else {
 		int myPid = fork();
-		if (myPid == -1) { //error
+		if (myPid == -1){ //error
 			printf("error: %d - %s\n", errno, strerror(errno));
 		}
 		if (myPid == 0){ //child process
@@ -128,6 +91,86 @@ void executeCommand(char** parameters){
 		else { //parent process
 			wait(&myPid);
 		}
+	}
+}
+
+// can't have more than one IO
+int searchIO(char* input){
+	if (strchr(input, '<') != NULL)	return 0;
+	if (strchr(input, '>') != NULL) return 1;
+	if (strchr(input, '|') != NULL) return 2;
+	return -1;
+}
+
+void stdInIO(char* input){
+	char* dupPtr = strdup(input);
+	char* commandStr = (char*)malloc(sizeof(char*) * 100);
+	commandStr = strsep(&dupPtr, "<"); //separate command and file
+	commandStr = trimCommand(commandStr);
+	char** commandArr = (char**)malloc(sizeof(char**) * 100);
+	commandArr = parseHelper(commandStr, " ");
+	input = trimCommand(input); //input = filename
+
+	int fdDupIn = dup(STDIN_FILENO);
+	int fdFile = open(input, O_RDONLY, 0644);
+	dup2(fdFile, STDIN_FILENO);
+	executeCommand(commandArr);
+	dup2(fdDupIn, STDIN_FILENO);
+	close(fdFile);
+}
+
+void stdOutIO(char* input){
+	char* dupPtr = strdup(input);
+	char* commandStr = (char*)malloc(sizeof(char*) * 100);
+	commandStr = strsep(&dupPtr, ">"); //separate command and file
+	commandStr = trimCommand(commandStr);
+	char** commandArr = (char**)malloc(sizeof(char**) * 100);
+	commandArr = parseHelper(commandStr, " ");
+	input = trimCommand(input); //input = filename
+
+	int fdDupOut = dup(STDOUT_FILENO);
+	int fdFile = open(input, O_WRONLY|O_CREAT, 0644);
+	dup2(fdFile, STDOUT_FILENO);
+	executeCommand(commandArr);
+	dup2(fdDupOut, STDOUT_FILENO);
+	close(fdFile);
+}
+
+void pipeIO(char* input){
+	char* dupPtr = strdup(input);
+	char* commandStrOut = (char*)malloc(sizeof(char*) * 100);
+	char* commandStrIn = (char*)malloc(sizeof(char*) * 100);
+	commandStrOut = strsep(&dupPtr, "|");
+	commandStrOut = trimCommand(commandStrOut);
+	commandStrIn = trimCommand(dupPtr);		
+	char** commandArrOut = (char**)malloc(sizeof(char*) * 100);
+	commandArrOut = parseHelper(commandStrOut, " ");
+	char** commandArrIn = (char**)malloc(sizeof(char*) * 100);
+	commandArrIn = parseHelper(commandStrIn, " ");
+	
+	int fdDupIn = dup(STDIN_FILENO);
+	int fdDupOut = dup(STDOUT_FILENO);	
+	int fdPipe[2];
+	pipe(fdPipe);
+
+	int myPid = fork();
+	if (myPid == -1){ //error
+		printf("error: %d - %s\n", errno, strerror(errno));
+	}
+	if (myPid == 0){
+		dup2(fdPipe[1], STDOUT_FILENO);
+		close(fdPipe[1]);
+		executeCommand(commandArrOut);
+		dup2(fdDupOut, STDOUT_FILENO);
+		exit(0);
+	}
+	else {
+		wait(&myPid);
+		close(fdPipe[1]);
+		dup2(fdPipe[0], STDIN_FILENO);
+		close(fdPipe[0]);
+		executeCommand(commandArrIn);
+		dup2(fdDupIn, STDIN_FILENO);
 	}
 }
 
@@ -150,12 +193,7 @@ void runProgram(){
 		}
 		if (searchIO(commandStr) == 0) stdInIO(commandStr);
 		if (searchIO(commandStr) == 1) stdOutIO(commandStr);
+		if (searchIO(commandStr) == 2) pipeIO(commandStr);
 		cmdNo++;
 	}
-}
-
-int main(){
-	while(1)
-  		runProgram();
-	return 0;
 }

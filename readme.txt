@@ -1,11 +1,11 @@
-Reo-lly Amazing-ish Shell
+A Shell-ish Shell
 by Reo Kimura
 
 Features:
 	Forks and executes commands!
 	Parses multiple commands on one line!
-	Redirects using > and < but only one of either can be used per entry
-	Pipe usage limited to one per entry
+	Redirects using > and < but only limited to one (either) per entry
+	Pipes using | but limited to one per entry
 	Guaranteed to do something!
 
 Attempted:
@@ -20,7 +20,7 @@ Bugs:
 	
 Files & Function Headers:
 
-shell.c & shell.h
+shellUtils.c & shellUtils.h
 	Handles everything: parsing, forking, and executing commands
 
 	/*======== char* trimCommand() ==========

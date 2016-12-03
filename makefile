@@ -1,5 +1,5 @@
 compile: shell.c
-	gcc shell.c -o shell
+	gcc shellApp.c shellUtils.c -o shell
 
 clean:
 	rm *~ *# shell
