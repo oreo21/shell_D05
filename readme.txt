@@ -4,18 +4,18 @@ by Reo Kimura
 Features:
 	Forks and executes commands!
 	Parses multiple commands on one line!
-	Redirects using >, <!
+	Redirects using > and < but only one of either can be used per entry
+	Pipe usage limited to one per entry
 	Guaranteed to do something!
 
 Attempted:
 	The following did not end up working, but have been left
 		in the code, commented out.
-	Could not get pipes to work
+
 
 Bugs:
 	Putting two ;'s next to each other will break the parser
-	Redirecting to a file that does not exist occasionally
-		does not work.
+	'exit' occasionally does not work
 
 	
 Files & Function Headers:
