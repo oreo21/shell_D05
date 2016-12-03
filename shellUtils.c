@@ -11,7 +11,7 @@
 //io: takes one string, returns one string
 //desc: removes a string's leading + trailing whitespace
 char* trimCommand(char* input){
-	if (input == NULL) return;
+	if (input == NULL) return NULL;
 	char* temp = input;
 	while (isspace(*temp)) temp++; //remove leading
 	if (*temp == 0) return temp; //only whitespace remaining
@@ -24,6 +24,7 @@ char* trimCommand(char* input){
 //io: takes two strings, returns an array of strings (pointer to pointers to chars
 //desc: splits a string based on given delimeter
 char** parseHelper(char* input, char* delim){
+	if (input == NULL) return NULL;
 	char** args = (char**)malloc(sizeof(char**) * 100);
 	int i = 0;
 	char* dup = strdup(input);
@@ -39,6 +40,7 @@ char** parseHelper(char* input, char* delim){
 //io: takes one string and one int, returns a string
 //desc: returns a trimmed string of pos-th command line argument 
 char* parseCommand(char* input, int pos){
+	if (input == NULL) return NULL;
 	char** allCmd = (char**)malloc(sizeof(char**) *100);
 	char* singleCmd = (char*)malloc(sizeof(char*) * 100);
 	allCmd = parseHelper(input, ";");
@@ -55,6 +57,7 @@ char* parseCommand(char* input, int pos){
 //io: takes a string, returns an array of strings
 //desc: breaks up a command string it a series of strings for each parameter
 char** chopCommand(char* input){
+	if (input == NULL) return NULL;
 	char** retCmd = (char**)malloc(sizeof(char**) * 100);
 	retCmd = parseHelper(input, " ");
 	return retCmd;
@@ -63,6 +66,7 @@ char** chopCommand(char* input){
 //io: takes one string, returns an int
 //desc: counts the number of commands inputted
 int tallyCommand(char* input){
+	if (input == NULL) return NULL;
 	char** args = (char**)malloc(sizeof(char**) * 100);
 	int i = 0;
 	char* dup = strdup(input);
@@ -108,8 +112,9 @@ void executeCommand(char** parameters){
 }
 
 //io: takes a string, returns an int
-//desc: determines whether a certain type of IO is being called upon
+//desc: determines what type of IO operation is being called upon, if at all
 int searchIO(char* input){
+	if (input == NULL) return NULL;
 	if (strchr(input, '<') != NULL)	return 0;
 	if (strchr(input, '>') != NULL) return 1;
 	if (strchr(input, '|') != NULL) return 2;
@@ -117,7 +122,7 @@ int searchIO(char* input){
 }
  
 //io: takes one string, no return value
-//desc: uses file descriptors to allow commands to open files
+//desc: creates duplicate of StdIn file descriptor, allowing inputted commands to read files
 void stdInIO(char* input){
 	char* dupPtr = strdup(input);
 	char* commandStr = (char*)malloc(sizeof(char*) * 100);
@@ -136,7 +141,7 @@ void stdInIO(char* input){
 }
  
 //io: takes one string, no return value
-//desc: uses file descriptors to allow commands to open/write files
+//desc: creates duplicate of StdOut file descriptor, allowing inputted commands to create/write files
 void stdOutIO(char* input){
 	char* dupPtr = strdup(input);
 	char* commandStr = (char*)malloc(sizeof(char*) * 100);
@@ -155,8 +160,8 @@ void stdOutIO(char* input){
 }
  
 //io: takes one string, no return value
-//desc: uses file descriptors and forks to channel the output of one command 
-// as the input of another
+//desc:	Uses duplicates of both StdIn + StdOut file descriptors and forks to simulate piping: transferring the
+// output of one command and using it as the input of another
 void pipeIO(char* input){
 	char* dupPtr = strdup(input);
 	char* commandStrOut = (char*)malloc(sizeof(char*) * 100);
