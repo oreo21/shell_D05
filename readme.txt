@@ -40,7 +40,7 @@ shellUtils.c & shellUtils.h
 	If delim is not provided, bad stuff will happen - delim is a must!
 	====================*/
 
-	/*======== char** parseCommand() ==========
+	/*======== char* parseCommand() ==========
 	Inputs:  char* input
         	 int pos
 	Returns: An array of strings where each entry is a token
@@ -50,6 +50,15 @@ shellUtils.c & shellUtils.h
 	by " " delimeter and returns that array of strings
 
 	If delim is not provided, bad stuff will happen - delim is a must!
+
+	/*======== char** chopCommand() ==========
+	Inputs:  char* input
+	Returns: An array of strings where each entry is a token
+	separated by delim
+
+	If delim is not provided, bad stuff will happen - delim is a must!
+	====================*/
+
 	====================*/
 
 	/*======== int tallyCommand() ==========
@@ -69,6 +78,42 @@ shellUtils.c & shellUtils.h
 	waits. If the provided command line argument(s) don't work, the child will 
 	throw an errno message. Special cases "exit" and "cd" are dealt with separately.
 	====================*/
+
+	/*======== void searchIO() ==========
+	Inputs:  char* input
+	Returns: An integer that signals what type of IO is being called upon, if at all
+
+	Combines all the processes involved in running a command. Reads the input, then
+	uses the parseCommand() and executeCommand() functions to parse and execute the
+	command(s).
+	====================*/
+
+	/*======== void stdInIO() ==========
+	Inputs:  char* input
+	Returns: Nothing
+
+	Combines all the processes involved in running a command. Reads the input, then
+	uses the parseCommand() and executeCommand() functions to parse and execute the
+	command(s).
+	====================*/
+
+	/*======== void stdOutIO() ==========
+	Inputs:  char* input
+	Returns: Nothing
+
+	Combines all the processes involved in running a command. Reads the input, then
+	uses the parseCommand() and executeCommand() functions to parse and execute the
+	command(s).
+	====================*/
+
+	/*======== void pipeIO() ==========
+	Inputs:  char* input
+	Returns: Nothing
+
+	Combines all the processes involved in running a command. Reads the input, then
+	uses the parseCommand() and executeCommand() functions to parse and execute the
+	command(s).
+	====================*/				
 
 	/*======== void runProgram() ==========
 	Inputs:  None

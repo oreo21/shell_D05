@@ -7,7 +7,9 @@
 #include <errno.h>
 #include "shellUtils.h"
 
-//input: 
+
+//io: takes one string, returns one string
+//desc: removes a string's leading + trailing whitespace
 char* trimCommand(char* input){
 	if (input == NULL) return;
 	char* temp = input;
@@ -19,6 +21,8 @@ char* trimCommand(char* input){
 	return temp;
 }
 
+//io: takes two strings, returns an array of strings (pointer to pointers to chars
+//desc: splits a string based on given delimeter
 char** parseHelper(char* input, char* delim){
 	char** args = (char**)malloc(sizeof(char**) * 100);
 	int i = 0;
@@ -31,7 +35,9 @@ char** parseHelper(char* input, char* delim){
 	free(dup);
 	return args;
 }
-
+ 
+//io: takes one string and one int, returns a string
+//desc: returns a trimmed string of pos-th command line argument 
 char* parseCommand(char* input, int pos){
 	char** allCmd = (char**)malloc(sizeof(char**) *100);
 	char* singleCmd = (char*)malloc(sizeof(char*) * 100);
@@ -45,13 +51,17 @@ char* parseCommand(char* input, int pos){
 	singleCmd = trimCommand(singleCmd);
 	return singleCmd;
 }
-
+ 
+//io: takes a string, returns an array of strings
+//desc: breaks up a command string it a series of strings for each parameter
 char** chopCommand(char* input){
 	char** retCmd = (char**)malloc(sizeof(char**) * 100);
 	retCmd = parseHelper(input, " ");
 	return retCmd;
 }
-
+ 
+//io: takes one string, returns an int
+//desc: counts the number of commands inputted
 int tallyCommand(char* input){
 	char** args = (char**)malloc(sizeof(char**) * 100);
 	int i = 0;
@@ -64,7 +74,10 @@ int tallyCommand(char* input){
 	free(dup);
 	return i;
 }
-
+ 
+//io: takes an array of strings, no return value
+//desc: takes a single command, and forks + executes command
+// special cases for 'cd' and 'exit'
 void executeCommand(char** parameters){
 	if (strcmp(parameters[0], "exit") == 0){
 		printf("exiting shell...\n");
@@ -94,14 +107,17 @@ void executeCommand(char** parameters){
 	}
 }
 
-// can't have more than one IO
+//io: takes a string, returns an int
+//desc: determines whether a certain type of IO is being called upon
 int searchIO(char* input){
 	if (strchr(input, '<') != NULL)	return 0;
 	if (strchr(input, '>') != NULL) return 1;
 	if (strchr(input, '|') != NULL) return 2;
 	return -1;
 }
-
+ 
+//io: takes one string, no return value
+//desc: uses file descriptors to allow commands to open files
 void stdInIO(char* input){
 	char* dupPtr = strdup(input);
 	char* commandStr = (char*)malloc(sizeof(char*) * 100);
@@ -118,7 +134,9 @@ void stdInIO(char* input){
 	dup2(fdDupIn, STDIN_FILENO);
 	close(fdFile);
 }
-
+ 
+//io: takes one string, no return value
+//desc: uses file descriptors to allow commands to open/write files
 void stdOutIO(char* input){
 	char* dupPtr = strdup(input);
 	char* commandStr = (char*)malloc(sizeof(char*) * 100);
@@ -135,7 +153,10 @@ void stdOutIO(char* input){
 	dup2(fdDupOut, STDOUT_FILENO);
 	close(fdFile);
 }
-
+ 
+//io: takes one string, no return value
+//desc: uses file descriptors and forks to channel the output of one command 
+// as the input of another
 void pipeIO(char* input){
 	char* dupPtr = strdup(input);
 	char* commandStrOut = (char*)malloc(sizeof(char*) * 100);
@@ -173,7 +194,10 @@ void pipeIO(char* input){
 		dup2(fdDupIn, STDIN_FILENO);
 	}
 }
-
+ 
+//io: no parameters, no return values
+//desc: combines other functions to carry out basic shell processes
+// reads the input, parses and executes commands appropriately
 void runProgram(){
 	//read command
 	char input[100];
