@@ -6,26 +6,17 @@ Features:
 	Parses multiple commands on one line!
 	Redirects using >, <!
 	Guaranteed to do something!
-	But can it summon a good grade?
 
 Attempted:
 	The following did not end up working, but have been left
 		in the code, commented out.
 	Could not get pipes to work
-	Tried to implement >>, but it kept overwriting the file
-	Looked at replacing ~/ with home directory, got seg faults
-	Was unable to have the "puppy" command produce a puppy and
-		eject it from the optical drive.
 
 Bugs:
 	Putting two ;'s next to each other will break the parser
 	Redirecting to a file that does not exist occasionally
 		does not work.
-	Hair regrowth function may result in a seg fault.
-	Occasionally, the unicorn command will fail, opening a
-		great chasm in the earth and summoning the demon 
-		Beelzebub, who will proceeded to unleash his wrath 
-		and begin his reign of terror.
+
 	
 Files & Function Headers:
 
@@ -39,13 +30,35 @@ shell.c & shell.h
 	Removes all leading and trailing whitespaces of input, if applicable.
 	Gives a blank return statement if the input points to NULL. Otherwise
 	returns a pointer to the modified input.
-	/*======== char** parseCommand() ==========
+	
+	/*======== char** parseHelper() ==========
 	Inputs:  char* input
         	 char* delim 
 	Returns: An array of strings where each entry is a token
 	separated by delim
 
 	If delim is not provided, bad stuff will happen - delim is a must!
+	====================*/
+
+	/*======== char** parseCommand() ==========
+	Inputs:  char* input
+        	 int pos
+	Returns: An array of strings where each entry is a token
+	separated by delim
+
+	First separates input by ";" delimeter, then separates pos-th command
+	by " " delimeter and returns that array of strings
+
+	If delim is not provided, bad stuff will happen - delim is a must!
+	====================*/
+
+	/*======== int tallyCommand() ==========
+	Inputs:  char* input
+	Returns: An integer representing the number of command line arguments
+	provided
+
+	Separates the initial input string by the ";" delimeter and keeps track of
+	how many times this occurs
 	====================*/
 
 	/*======== void executeCommand() ==========
