@@ -36,9 +36,9 @@ char** parseHelper(char* input, char* delim){
 	free(dup);
 	return args;
 }
- 
+
 //io: takes one string and one int, returns a string
-//desc: returns a trimmed string of pos-th command line argument 
+//desc: returns a trimmed string of pos-th command line argument
 char* parseCommand(char* input, int pos){
 	if (input == NULL) return NULL;
 	char** allCmd = (char**)malloc(sizeof(char**) *100);
@@ -53,7 +53,7 @@ char* parseCommand(char* input, int pos){
 	singleCmd = trimCommand(singleCmd);
 	return singleCmd;
 }
- 
+
 //io: takes a string, returns an array of strings
 //desc: breaks up a command string it a series of strings for each parameter
 char** chopCommand(char* input){
@@ -62,7 +62,7 @@ char** chopCommand(char* input){
 	retCmd = parseHelper(input, " ");
 	return retCmd;
 }
- 
+
 //io: takes one string, returns an int
 //desc: counts the number of commands inputted
 int tallyCommand(char* input){
@@ -78,7 +78,7 @@ int tallyCommand(char* input){
 	free(dup);
 	return i;
 }
- 
+
 //io: takes an array of strings, no return value
 //desc: takes a single command, and forks + executes command
 // special cases for 'cd' and 'exit'
@@ -115,7 +115,7 @@ int searchIO(char* input){
 	if (strchr(input, '|') != NULL) return 2;
 	return -1;
 }
- 
+
 //io: takes one string, no return value
 //desc: creates duplicate of StdIn file descriptor, allowing inputted commands to read files
 void stdInIO(char* input){
@@ -134,7 +134,7 @@ void stdInIO(char* input){
 	dup2(fdDupIn, STDIN_FILENO);
 	close(fdFile);
 }
- 
+
 //io: takes one string, no return value
 //desc: creates duplicate of StdOut file descriptor, allowing inputted commands to create/write files
 void stdOutIO(char* input){
@@ -153,7 +153,7 @@ void stdOutIO(char* input){
 	dup2(fdDupOut, STDOUT_FILENO);
 	close(fdFile);
 }
- 
+
 //io: takes one string, no return value
 //desc:	Uses duplicates of both StdIn + StdOut file descriptors and forks to simulate piping: transferring the
 // output of one command and using it as the input of another
@@ -163,14 +163,14 @@ void pipeIO(char* input){
 	char* commandStrIn = (char*)malloc(sizeof(char*) * 100);
 	commandStrOut = strsep(&dupPtr, "|");
 	commandStrOut = trimCommand(commandStrOut);
-	commandStrIn = trimCommand(dupPtr);		
+	commandStrIn = trimCommand(dupPtr);
 	char** commandArrOut = (char**)malloc(sizeof(char**) * 100);
 	commandArrOut = parseHelper(commandStrOut, " ");
 	char** commandArrIn = (char**)malloc(sizeof(char**) * 100);
 	commandArrIn = parseHelper(commandStrIn, " ");
-	
+
 	int fdDupIn = dup(STDIN_FILENO);
-	int fdDupOut = dup(STDOUT_FILENO);	
+	int fdDupOut = dup(STDOUT_FILENO);
 	int fdPipe[2];
 	pipe(fdPipe);
 
@@ -194,7 +194,7 @@ void pipeIO(char* input){
 		dup2(fdDupIn, STDIN_FILENO);
 	}
 }
- 
+
 //io: no parameters, no return values
 //desc: combines other functions to carry out basic shell processes
 // reads the input, parses and executes commands appropriately
@@ -206,7 +206,7 @@ void runProgram(){
   	*(strchr(input, '\n')) = NULL;
 
    	//parse and execute command(s)
-  	int cmdTotal = tallyCommand(input);
+  int cmdTotal = tallyCommand(input);
 	int cmdNo = 0;
 	char* commandStr = (char*)malloc(sizeof(char*) * 100);
 	while (cmdNo < cmdTotal){
